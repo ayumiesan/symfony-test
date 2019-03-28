@@ -5,31 +5,46 @@
         <div class="col-lg-12">
             <div class="ibox">
                 <div class="ibox-title">
-                    <h4>Liste des articles</h4>
+                    <h4 class="text-center">Liste des articles</h4>
                 </div>
+
                 <a href="{{ path('article_add') }}" class="btn btn-primary btn-sm">Ajouter un article</a>
+
+                <div class="row m-t-xs">
+                    <div class="col text-center">
+                        <label>Liste de sélection :</label>
+                        <select id="rate">
+                            <option value="0">Tout</option>
+                            <option value="1">Montant TTC taux 1 seulement</option>
+                            <option value="2">Montant TTC taux 2 seulement</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div class="ibox-content">
                     <div>
-                        <table class="table table-hover">
-                            <tbody>
-                            {% for article in articles %}
+                        <table id="article-table" class="table table-hover">
+                            <thead>
                                 <tr>
                                     <th>Label</th>
                                     <th>Description</th>
                                     <th>Montant HT</th>
                                     <th>Montant TTC</th>
                                 </tr>
-                                <tr>
-                                    <td>{{ article.label }}</td>
-                                    <td>{% if article.description %}{{ article.description }}{% endif %}</td>
-                                    <td>{{ article.amountHt|number_format(2, ',') }}</td>
-                                    <td>{{ article.amountHt * article.rate.value }}</td>
-                                </tr>
-                            {% else %}
-                                <tr>
-                                    <td>Aucun article à afficher</td>
-                                </tr>
-                            {% endfor %}
+                            </thead>
+                            <tbody>
+                                {% for article in articles %}
+                                    <tr>
+                                        <td>{{ article.label }}</td>
+                                        <td>{% if article.description %}{{ article.description|raw }}{% endif %}</td>
+                                        <td>{{ article.amountHt|number_format(2, ',') }}</td>
+                                        <td data-search="{{ article.rate.id }}">{{ article.amountHt * article.rate.value }}</td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td>Aucun article à afficher</td>
+                                    </tr>
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
@@ -37,4 +52,33 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $.fn.dataTable.ext.search.push(
+            function( settings, data, dataIndex ) {
+                const rate = $('#rate').val();
+
+                if (data[3] === rate || rate === "0") {
+                    return true;
+                }
+                return false;
+            }
+        );
+
+        $(document).ready(function() {
+            let table = $('#article-table').DataTable({
+                'ordering': false,
+                'paging': false,
+                'info': false
+            });
+
+            $('#rate').change( function() {
+                table.draw();
+            } );
+
+            $('#article-table_filter').remove();
+        } );
+    </script>
 {% endblock %}

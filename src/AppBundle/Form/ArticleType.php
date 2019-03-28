@@ -8,6 +8,8 @@ use AppBundle\Entity\Article;
 use AppBundle\Entity\Rate;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -17,12 +19,14 @@ final class ArticleType extends AbstractType
     {
         $builder
             ->add('label')
-            ->add('amountHt')
+            ->add('amountHt', NumberType::class)
             ->add('rate', EntityType::class, [
                 'class' => Rate::class,
                 'choice_label' => 'label',
             ])
-            ->add('description')
+            ->add('description', TextType::class, [
+                'required' => false,
+            ])
         ;
     }
 

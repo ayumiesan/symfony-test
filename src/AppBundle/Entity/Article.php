@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Table(name="article")
@@ -21,16 +22,21 @@ class Article
 
     /**
      * @ORM\Column(name="label", type="string", length=100)
+     * @Assert\NotBlank()
+     * @Assert\Length(max = 100)
      */
     private $label;
 
     /**
      * @ORM\Column(name="description", type="string", length=255, nullable=true)
+     * @Assert\Length(max = 255)
      */
     private $description;
 
     /**
      * @ORM\Column(name="amountHt", type="float")
+     * @Assert\NotBlank()
+     * @Assert\Type("float")
      */
     private $amountHt;
 
@@ -42,6 +48,7 @@ class Article
     /**
      * @ORM\ManyToOne(targetEntity="Rate")
      * @ORM\JoinColumn(name="rate_id", referencedColumnName="id")
+     * @Assert\NotNull()
      */
     private $rate;
 
